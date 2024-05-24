@@ -9,9 +9,13 @@ android {
 
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
-    implementation project(':capacitor-camera')
-    implementation project(':capacitor-splash-screen')
-    implementation project(':y')
+    implementation project(':capacitor-community-video-recorder')
+    implementation project(':capacitor-app')
+    implementation project(':capacitor-filesystem')
+    implementation project(':capacitor-haptics')
+    implementation project(':capacitor-keyboard')
+    implementation project(':capacitor-screen-orientation')
+    implementation project(':capacitor-status-bar')
 
 }
 

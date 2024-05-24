@@ -1,0 +1,55 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Video Recorder
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true"
+  [ngClass]="{ isRecording: isRecording || initialized }">
+  <div *ngIf="showVideos && videos.length; else NoVideos" style="display: flex; flex-direction: column; justify-content: center; margin: 16px 0px;">
+    <div *ngFor="let video of videos">
+      <video [height]="200" [src]="video.url" controls></video>
+      <div *ngIf="video.metadata">
+        <ion-label>Video Metadata</ion-label>
+        <ion-list>
+          <ion-item>
+            <ion-label>Size</ion-label>
+            <ion-label>{{ video.metadata.size }}</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>Duration</ion-label>
+            <ion-label>{{ video.metadata.duration }}</ion-label>
+          </ion-item>
+        </ion-list>
+      </div>
+    </div>
+  </div>
+  <ng-template #NoVideos>
+    <div *ngIf="showVideos" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+      <ion-icon name="videocam-off-outline" style="font-size: 100px;"></ion-icon>
+      <ion-label class="ion-text-center">No Videos</ion-label>
+      <ion-label class="ion-text-center">Record some videos and come back later</ion-label>
+    </div>
+  </ng-template>
+</ion-content>
+<ion-footer style="background-color: white;">
+  <div class="duration">
+    <ion-label>{{ duration }}</ion-label>
+  </div>
+  <div class="footer">
+    <ion-button *ngIf="!isRecording" (click)="startRecording()">
+      <ion-icon  name="videocam"></ion-icon>
+    </ion-button>
+    <ion-button *ngIf="isRecording" (click)="stopRecording()">
+      <ion-icon name="stop-circle-outline"></ion-icon>
+    </ion-button>
+    <ion-button *ngIf="!isRecording" (click)="flipCamera()">
+      <ion-icon name="camera-reverse-outline"></ion-icon>
+    </ion-button>
+    <ion-button *ngIf="!isRecording" (click)="toggleVideos()">
+      <ion-icon [name]="showVideos ? 'folder-open-outline' : 'folder-outline'"></ion-icon>
+    </ion-button>
+  </div>
+</ion-footer>

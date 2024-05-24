@@ -1,10 +1,10 @@
 import { registerPlugin } from '@capacitor/core';
 
-import type { ExamplePlugin } from './definitions';
+import type { VideoRecorderPlugin } from './definitions';
 
-const Example = registerPlugin<ExamplePlugin>('Example', {
-  web: () => import('./web').then(m => new m.ExampleWeb()),
+const VideoRecorder = registerPlugin<VideoRecorderPlugin>('VideoRecorder', {
+  web: () => import('./web').then(m => new m.VideoRecorderWeb()),
 });
 
-export * from './definitions';
-export { Example };
+export { VideoRecorderQuality, VideoRecorderCamera, VideoRecorderOptions, VideoRecorderErrors, VideoRecorderPlugin, VideoRecorderPreviewFrame } from './definitions';
+export { VideoRecorder };

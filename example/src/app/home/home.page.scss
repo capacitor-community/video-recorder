@@ -1,0 +1,17 @@
+.isRecording {
+  --background: transparent;
+}
+
+.footer {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.duration {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 16px;
+  padding-bottom: 8px;
+}
