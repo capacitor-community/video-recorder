@@ -19,7 +19,7 @@ npx cap sync
 * [`addPreviewFrameConfig(...)`](#addpreviewframeconfig)
 * [`editPreviewFrameConfig(...)`](#editpreviewframeconfig)
 * [`switchToPreviewFrame(...)`](#switchtopreviewframe)
-* [`showPreviewFrame()`](#showpreviewframe)
+* [`showPreviewFrame(...)`](#showpreviewframe)
 * [`hidePreviewFrame()`](#hidepreviewframe)
 * [`startRecording()`](#startrecording)
 * [`stopRecording()`](#stoprecording)
@@ -103,11 +103,15 @@ switchToPreviewFrame(options: { id: string; }) => Promise<void>
 --------------------
 
 
-### showPreviewFrame()
+### showPreviewFrame(...)
 
 ```typescript
-showPreviewFrame() => Promise<void>
+showPreviewFrame(config: { position: number; quality: number; }) => Promise<void>
 ```
+
+| Param        | Type                                                |
+| ------------ | --------------------------------------------------- |
+| **`config`** | <code>{ position: number; quality: number; }</code> |
 
 --------------------
 

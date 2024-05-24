@@ -1,5 +1,5 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-title>
       Video Recorder
     </ion-title>
@@ -12,8 +12,10 @@
     <div *ngFor="let video of videos">
       <video [height]="200" [src]="video.url" controls></video>
       <div *ngIf="video.metadata">
-        <ion-label>Video Metadata</ion-label>
         <ion-list>
+          <ion-item>
+            <ion-label>Video Metadata</ion-label>
+          </ion-item>
           <ion-item>
             <ion-label>Size</ion-label>
             <ion-label>{{ video.metadata.size }}</ion-label>
@@ -51,5 +53,23 @@
     <ion-button *ngIf="!isRecording" (click)="toggleVideos()">
       <ion-icon [name]="showVideos ? 'folder-open-outline' : 'folder-outline'"></ion-icon>
     </ion-button>
+    <ion-button
+      *ngIf="!isRecording"
+      class="text-center text-sm w-1/2 rounded-2xl p-2 app-button"
+      id="settings-trigger">
+      <ion-icon name="settings-outline"></ion-icon>
+    </ion-button>
+    <ion-popover #settingsPopover trigger="settings-trigger">
+      <ng-template>
+        <ion-list mode="md">
+          <ion-item
+            button
+            *ngFor="let quality of videoQualityMap"
+            (click)="settingsPopover.dismiss(); videoQualityChanged(quality.command)">
+            <ion-label>{{ quality.label }}</ion-label>
+          </ion-item>
+        </ion-list>
+      </ng-template>
+    </ion-popover>
   </div>
 </ion-footer>

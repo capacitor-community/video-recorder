@@ -1,10 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
   IonTitle,
   IonContent,
-  IonButton, IonFooter, IonLabel, IonIcon, IonList, IonItem } from '@ionic/angular/standalone';
+  IonButton, IonFooter, IonLabel, IonIcon, IonList, IonItem, IonPopover,
+  Platform} from '@ionic/angular/standalone';
 import {
   VideoRecorder,
   VideoRecorderCamera,
@@ -18,7 +19,8 @@ import {
   stopCircleOutline,
   cameraReverseOutline,
   folderOutline,
-  folderOpenOutline
+  folderOpenOutline,
+  settingsOutline
 } from 'ionicons/icons';
 import { Filesystem } from '@capacitor/filesystem';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
@@ -28,22 +30,36 @@ import { ScreenOrientation } from '@capacitor/screen-orientation';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   standalone: true,
-  imports: [IonItem, IonList, IonIcon, IonLabel, IonFooter, CommonModule, IonButton, IonHeader, IonToolbar, IonTitle, IonContent],
+  imports: [IonPopover, IonItem, IonList, IonIcon, IonLabel, IonFooter, CommonModule, IonButton, IonHeader, IonToolbar, IonTitle, IonContent],
 })
 export class HomePage implements OnInit, OnDestroy {
+  private platform = inject(Platform);
   videos: { url: string, metadata?: { size: string; duration: string } }[] = [];
   initialized = false;
   isRecording = false;
   showVideos = false;
   durationIntervalId!: any;
   duration = "00:00";
+  quality = VideoRecorderQuality.HIGHEST;
+
+  videoQualityMap = [
+    { command: VideoRecorderQuality.HIGHEST, label: 'Highest' },
+    { command: VideoRecorderQuality.MAX_1080P, label: '1080p' },
+    { command: VideoRecorderQuality.MAX_2160P, label: '2160P' },
+    { command: VideoRecorderQuality.MAX_720P, label: '720p' },
+    { command: VideoRecorderQuality.MAX_480P, label: '480p' },
+    { command: VideoRecorderQuality.QVGA, label: 'QVGA' },
+    { command: VideoRecorderQuality.LOWEST, label: 'Lowest' },
+  ]
+
   constructor() {
     addIcons({
       videocam,
       stopCircleOutline,
       cameraReverseOutline,
       folderOutline,
-      folderOpenOutline
+      folderOpenOutline,
+      settingsOutline
     })
   }
 
@@ -96,8 +112,17 @@ export class HomePage implements OnInit, OnDestroy {
     await VideoRecorder.initialize({
       camera: VideoRecorderCamera.BACK,
       previewFrames: [config],
-      quality: VideoRecorderQuality.MAX_480P
+      quality: this.quality
     });
+
+    if (this.platform.is('android')) {
+      // Only used by Android
+      await VideoRecorder.showPreviewFrame({
+        position: 0, // 0:= - Back, 1:= - Front
+        quality: this.quality
+      });
+    }
+
     this.initialized = true;
   }
 
@@ -108,7 +133,17 @@ export class HomePage implements OnInit, OnDestroy {
     this.showVideos = false;
 
     // lock screen orientation when recording
-    const orientation = await ScreenOrientation.orientation()
+    const orientation = await ScreenOrientation.orientation();
+
+    if (this.platform.is('ios')) {
+      // On iOS the landscape-primary and landscape-secondary are flipped for some reason
+      if (orientation.type === 'landscape-primary') {
+        orientation.type = 'landscape-secondary'
+      } else if (orientation.type === 'landscape-secondary') {
+        orientation.type = 'landscape-primary'
+      }
+    }
+
     await ScreenOrientation.lock({ orientation: orientation.type });
 
     this.durationIntervalId = setInterval(() => {
@@ -164,6 +199,12 @@ export class HomePage implements OnInit, OnDestroy {
       }
     })
     this.toggleVideos();
+  }
+
+  async videoQualityChanged(quality: VideoRecorderQuality) {
+    this.quality = quality;
+    await this.destroyCamera();
+    await this.initialise();
   }
 
   async destroyCamera() {

@@ -7,7 +7,7 @@ export interface VideoRecorderPlugin {
   addPreviewFrameConfig(config: VideoRecorderPreviewFrame): Promise<void>;
   editPreviewFrameConfig(config: VideoRecorderPreviewFrame): Promise<void>;
   switchToPreviewFrame(options: { id: string }): Promise<void>;
-  showPreviewFrame(): Promise<void>;
+  showPreviewFrame(config: { position: number; quality: number }): Promise<void>;
   hidePreviewFrame(): Promise<void>;
   startRecording(): Promise<void>;
   stopRecording(): Promise<{
