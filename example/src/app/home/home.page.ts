@@ -44,8 +44,8 @@ export class HomePage implements OnInit, OnDestroy {
 
   videoQualityMap = [
     { command: VideoRecorderQuality.HIGHEST, label: 'Highest' },
-    { command: VideoRecorderQuality.MAX_1080P, label: '1080p' },
     { command: VideoRecorderQuality.MAX_2160P, label: '2160P' },
+    { command: VideoRecorderQuality.MAX_1080P, label: '1080p' },
     { command: VideoRecorderQuality.MAX_720P, label: '720p' },
     { command: VideoRecorderQuality.MAX_480P, label: '480p' },
     { command: VideoRecorderQuality.QVGA, label: 'QVGA' },
@@ -204,6 +204,7 @@ export class HomePage implements OnInit, OnDestroy {
   async videoQualityChanged(quality: VideoRecorderQuality) {
     this.quality = quality;
     await this.destroyCamera();
+    this.showVideos = false;
     await this.initialise();
   }
 

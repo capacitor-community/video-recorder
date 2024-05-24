@@ -1,8 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
-    <ion-title>
-      Video Recorder
-    </ion-title>
+    <h6 class="ion-text-center">&#64;capacitor-community/video-recorder</h6>
   </ion-toolbar>
 </ion-header>
 
@@ -56,10 +54,10 @@
     <ion-button
       *ngIf="!isRecording"
       class="text-center text-sm w-1/2 rounded-2xl p-2 app-button"
-      id="settings-trigger">
+      (click)="settingsPopover.present()">
       <ion-icon name="settings-outline"></ion-icon>
     </ion-button>
-    <ion-popover #settingsPopover trigger="settings-trigger">
+    <ion-popover #settingsPopover>
       <ng-template>
         <ion-list mode="md">
           <ion-item
