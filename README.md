@@ -1,11 +1,16 @@
-# y
+<p align="center"><br><img src="https://user-images.githubusercontent.com/236501/85893648-1c92e880-b7a8-11ea-926d-95355b8175c7.png" width="128" height="128" /></p>
+<h3 align="center">VIDEO RECORDER</h3>
+<p align="center"><strong><code>@capacitor-community/video-recorder</code></strong></p>
+<br>
+<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 5</strong></p><br>
+<br>
 
 capacitor plugin to record video
 
 ## Install
 
 ```bash
-npm install y
+npm install @capacitor-community/video-recorder
 npx cap sync
 ```
 
@@ -45,7 +50,6 @@ initialize(options?: VideoRecorderOptions | undefined) => Promise<void>
 
 --------------------
 
-
 ### destroy()
 
 ```typescript
@@ -54,7 +58,6 @@ destroy() => Promise<void>
 
 --------------------
 
-
 ### flipCamera()
 
 ```typescript
@@ -62,7 +65,6 @@ flipCamera() => Promise<void>
 ```
 
 --------------------
-
 
 ### addPreviewFrameConfig(...)
 
@@ -76,7 +78,6 @@ addPreviewFrameConfig(config: VideoRecorderPreviewFrame) => Promise<void>
 
 --------------------
 
-
 ### editPreviewFrameConfig(...)
 
 ```typescript
@@ -88,7 +89,6 @@ editPreviewFrameConfig(config: VideoRecorderPreviewFrame) => Promise<void>
 | **`config`** | <code><a href="#videorecorderpreviewframe">VideoRecorderPreviewFrame</a></code> |
 
 --------------------
-
 
 ### switchToPreviewFrame(...)
 
@@ -102,7 +102,6 @@ switchToPreviewFrame(options: { id: string; }) => Promise<void>
 
 --------------------
 
-
 ### showPreviewFrame(...)
 
 ```typescript
@@ -115,7 +114,6 @@ showPreviewFrame(config: { position: number; quality: number; }) => Promise<void
 
 --------------------
 
-
 ### hidePreviewFrame()
 
 ```typescript
@@ -124,7 +122,6 @@ hidePreviewFrame() => Promise<void>
 
 --------------------
 
-
 ### startRecording()
 
 ```typescript
@@ -132,7 +129,6 @@ startRecording() => Promise<void>
 ```
 
 --------------------
-
 
 ### stopRecording()
 
@@ -144,7 +140,6 @@ stopRecording() => Promise<{ videoUrl: string; }>
 
 --------------------
 
-
 ### getDuration()
 
 ```typescript
@@ -154,7 +149,6 @@ getDuration() => Promise<{ value: number; }>
 **Returns:** <code>Promise&lt;{ value: number; }&gt;</code>
 
 --------------------
-
 
 ### addListener('onVolumeInput', ...)
 
@@ -171,9 +165,7 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 
 --------------------
 
-
 ### Interfaces
-
 
 #### VideoRecorderOptions
 
@@ -183,7 +175,6 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 | **`quality`**       | <code><a href="#videorecorderquality">VideoRecorderQuality</a></code> |
 | **`autoShow`**      | <code>boolean</code>                                                  |
 | **`previewFrames`** | <code>VideoRecorderPreviewFrame[]</code>                              |
-
 
 #### VideoRecorderPreviewFrame
 
@@ -198,16 +189,13 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 | **`borderRadius`**  | <code>number</code>                                                 |
 | **`dropShadow`**    | <code>{ opacity?: number; radius?: number; color?: string; }</code> |
 
-
 #### PluginListenerHandle
 
 | Prop         | Type                                      |
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
-
 ### Enums
-
 
 #### VideoRecorderCamera
 
@@ -215,7 +203,6 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 | ----------- | -------------- |
 | **`FRONT`** | <code>0</code> |
 | **`BACK`**  | <code>1</code> |
-
 
 #### VideoRecorderQuality
 
