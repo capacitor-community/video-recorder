@@ -1,6 +1,6 @@
 {
   "name": "@capacitor-community/video-recorder",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "private": false,
   "description": "capacitor plugin to record video",
   "main": "dist/plugin.cjs.js",
@@ -11,10 +11,9 @@
     "android/src/main/",
     "android/build.gradle",
     "dist/",
-    "ios/Sources",
-    "ios/Tests",
-    "Package.swift",
-    "CapacitorVideoRecorder.podspec"
+    "ios/Plugin",
+    "ios/Podfile",
+    "CapacitorCommunityVideoRecorder.podspec"
   ],
   "author": "shiv19",
   "license": "MIT",
