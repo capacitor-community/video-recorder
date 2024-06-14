@@ -14,24 +14,119 @@ npm install @capacitor-community/video-recorder
 npx cap sync
 ```
 
+To ensure the Android lib is downloadable when building the app, you can add the following to the repositories section of your project's build.gradle file:
+
+```gradle
+repositories {
+  google()
+  mavenCentral()
+  maven {
+    url "https://jitpack.io"
+  }
+}
+```
+
+#### Platform Support
+
+- iOS
+- Android
+
+> On a web browser, we will fake the behavior to allow for easier development.
+
+## Example Usage
+
+### Initializing Camera
+
+In order to initialize the camera feed (**note**: you are not recording at this point), you must first specify a config to the video recorder.
+
+> Note: To overlay your web UI on-top of the camera output, you must use stackPosition: back and make all layers of your app transparent so that the camera can be seen under the webview.
+
+There are 2 changes needed to make the webview transparent on Android and iOS:
+
+```scss
+// in the scss file of your page
+ion-content {
+  --background: transparent;
+}
+```
+
+```ts
+// in the capacitor.config.ts
+{
+  'backgroundColor: '#ff000000', // this is needed mainly on iOS
+}
+```
+
+Next in your app:
+
+```typescript
+import { VideoRecorderCamera, VideoRecorderPreviewFrame } from '@teamhive/capacitor-video-recorder';
+
+const { VideoRecorder } = Plugins;
+
+const config: VideoRecorderPreviewFrame = {
+    id: 'video-record',
+    stackPosition: 'back', // 'front' overlays your app', 'back' places behind your app.
+    width: 'fill',
+    height: 'fill',
+    x: 0,
+    y: 0,
+    borderRadius: 0
+};
+await VideoRecorder.initialize({
+    camera: VideoRecorderCamera.FRONT, // Can use BACK
+    previewFrames: [config]
+});
+```
+
+### Recording
+
+Starts recording against the capture device.
+
+```typescript
+VideoRecorder.startRecording();
+```
+
+### Stop Recording / Getting Result
+
+Stops the capture device and returns the path of the local video file.
+
+``` typescript
+const res = await VideoRecorder.stopRecording();
+// The video url is the local file path location of the video output.
+return res.videoUrl;
+```
+
+### Destroying Camera
+
+Used to disconnect from the capture device and remove any native UI layers that exist.
+
+```typescript
+VideoRecorder.destroy();
+```
+
+### Demo App
+
+The demo app can be found in the Example folder of this repo
+
 ## API
 
 <docgen-index>
 
-* [`initialize(...)`](#initialize)
-* [`destroy()`](#destroy)
-* [`flipCamera()`](#flipcamera)
-* [`addPreviewFrameConfig(...)`](#addpreviewframeconfig)
-* [`editPreviewFrameConfig(...)`](#editpreviewframeconfig)
-* [`switchToPreviewFrame(...)`](#switchtopreviewframe)
-* [`showPreviewFrame(...)`](#showpreviewframe)
-* [`hidePreviewFrame()`](#hidepreviewframe)
-* [`startRecording()`](#startrecording)
-* [`stopRecording()`](#stoprecording)
-* [`getDuration()`](#getduration)
-* [`addListener('onVolumeInput', ...)`](#addlisteneronvolumeinput-)
-* [Interfaces](#interfaces)
-* [Enums](#enums)
+- [`initialize(...)`](#initialize)
+- [`destroy()`](#destroy)
+- [`flipCamera()`](#flipcamera)
+- [`addPreviewFrameConfig(...)`](#addpreviewframeconfig)
+- [`editPreviewFrameConfig(...)`](#editpreviewframeconfig)
+- [`switchToPreviewFrame(...)`](#switchtopreviewframe)
+- [`showPreviewFrame(...)`](#showpreviewframe)
+- [`hidePreviewFrame()`](#hidepreviewframe)
+- [`startRecording()`](#startrecording)
+- [`stopRecording()`](#stoprecording)
+- [`getDuration()`](#getduration)
+- [`addListener('onVolumeInput', ...)`](#addlisteneronvolumeinput-)
+- [Interfaces](#interfaces)
+- [Enums](#enums)
 
 </docgen-index>
 
@@ -50,7 +145,6 @@ initialize(options?: VideoRecorderOptions | undefined) => Promise<void>
 
 --------------------
 
-
 ### destroy()
 
 ```typescript
@@ -59,7 +153,6 @@ destroy() => Promise<void>
 
 --------------------
 
-
 ### flipCamera()
 
 ```typescript
@@ -67,7 +160,6 @@ flipCamera() => Promise<void>
 ```
 
 --------------------
-
 
 ### addPreviewFrameConfig(...)
 
@@ -81,7 +173,6 @@ addPreviewFrameConfig(config: VideoRecorderPreviewFrame) => Promise<void>
 
 --------------------
 
-
 ### editPreviewFrameConfig(...)
 
 ```typescript
@@ -93,7 +184,6 @@ editPreviewFrameConfig(config: VideoRecorderPreviewFrame) => Promise<void>
 | **`config`** | <code><a href="#videorecorderpreviewframe">VideoRecorderPreviewFrame</a></code> |
 
 --------------------
-
 
 ### switchToPreviewFrame(...)
 
@@ -107,7 +197,6 @@ switchToPreviewFrame(options: { id: string; }) => Promise<void>
 
 --------------------
 
-
 ### showPreviewFrame(...)
 
 ```typescript
@@ -120,7 +209,6 @@ showPreviewFrame(config: { position: number; quality: number; }) => Promise<void
 
 --------------------
 
-
 ### hidePreviewFrame()
 
 ```typescript
@@ -129,7 +217,6 @@ hidePreviewFrame() => Promise<void>
 
 --------------------
 
-
 ### startRecording()
 
 ```typescript
@@ -137,7 +224,6 @@ startRecording() => Promise<void>
 ```
 
 --------------------
-
 
 ### stopRecording()
 
@@ -149,7 +235,6 @@ stopRecording() => Promise<{ videoUrl: string; }>
 
 --------------------
 
-
 ### getDuration()
 
 ```typescript
@@ -159,7 +244,6 @@ getDuration() => Promise<{ value: number; }>
 **Returns:** <code>Promise&lt;{ value: number; }&gt;</code>
 
 --------------------
-
 
 ### addListener('onVolumeInput', ...)
 
@@ -176,9 +260,7 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 
 --------------------
 
-
 ### Interfaces
-
 
 #### VideoRecorderOptions
 
@@ -188,7 +270,6 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 | **`quality`**       | <code><a href="#videorecorderquality">VideoRecorderQuality</a></code> |
 | **`autoShow`**      | <code>boolean</code>                                                  |
 | **`previewFrames`** | <code>VideoRecorderPreviewFrame[]</code>                              |
-
 
 #### VideoRecorderPreviewFrame
 
@@ -203,16 +284,13 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 | **`borderRadius`**  | <code>number</code>                                                 |
 | **`dropShadow`**    | <code>{ opacity?: number; radius?: number; color?: string; }</code> |
 
-
 #### PluginListenerHandle
 
 | Prop         | Type                                      |
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
-
 ### Enums
-
 
 #### VideoRecorderCamera
 
@@ -220,7 +298,6 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 | ----------- | -------------- |
 | **`FRONT`** | <code>0</code> |
 | **`BACK`**  | <code>1</code> |
-
 
 #### VideoRecorderQuality
 
@@ -235,3 +312,30 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 | **`QVGA`**      | <code>6</code> |
 
 </docgen-api>
+
+## Dependencies
+
+The Android code is using `triniwiz/FancyCamera` v1.2.4 (<https://github.com/triniwiz/fancycamera>)
+
+The iOS code is implemented using AVFoundation
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<p align="center">
+  <a href="https://github.com/sbannigan" title="sbannigan"><img src="https://github.com/sbannigan.png?size=100" width="50" height="50" /></a>
+  <a href="https://github.com/triniwiz" title="triniwiz"><img src="https://github.com/triniwiz.png?size=100" width="50" height="50" /></a>
+  <a href="https://github.com/sean-perkins" title="sean-perkins"><img src="https://github.com/sean-perkins.png?size=100" width="50" height="50" /></a>
+  <a href="https://github.com/shiv19" title="shiv19"><img src="https://github.com/shiv19.png?size=100" width="50" height="50" /></a>
+</p>
+
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
