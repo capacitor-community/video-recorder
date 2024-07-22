@@ -19,7 +19,7 @@ export interface VideoRecorderPlugin {
   addListener(
     eventName: 'onVolumeInput',
     listenerFunc: (event: { value: number }) => void,
-  ): PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
 }
 export interface VideoRecorderPreviewFrame {
   id: string;
