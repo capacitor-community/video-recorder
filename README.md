@@ -9,8 +9,17 @@ capacitor plugin to record video
 
 ## Install
 
+Capacitor v6
+
 ```bash
 npm install @capacitor-community/video-recorder
+npx cap sync
+```
+
+Capacitor v5
+
+```bash
+npm install @capacitor-community/video-recorder@5
 npx cap sync
 ```
 
@@ -248,7 +257,7 @@ getDuration() => Promise<{ value: number; }>
 ### addListener('onVolumeInput', ...)
 
 ```typescript
-addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }) => void) => PluginListenerHandle
+addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }) => void) => Promise<PluginListenerHandle>
 ```
 
 | Param              | Type                                                |
@@ -256,7 +265,7 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 | **`eventName`**    | <code>'onVolumeInput'</code>                        |
 | **`listenerFunc`** | <code>(event: { value: number; }) =&gt; void</code> |
 
-**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 --------------------
 
