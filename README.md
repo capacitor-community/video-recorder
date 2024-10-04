@@ -69,7 +69,7 @@ ion-content {
 Next in your app:
 
 ```typescript
-import { VideoRecorderCamera, VideoRecorderPreviewFrame } from '@teamhive/capacitor-video-recorder';
+import { VideoRecorderCamera, VideoRecorderPreviewFrame } from '@capacitor-community/video-recorder';
 
 const { VideoRecorder } = Plugins;
 
