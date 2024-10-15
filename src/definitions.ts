@@ -47,6 +47,13 @@ export interface VideoRecorderOptions {
   quality?: VideoRecorderQuality;
   autoShow?: boolean;
   previewFrames?: VideoRecorderPreviewFrame[];
+  /**
+   * The default bitrate is 4.5Mbps
+   * @default 4500000
+   * @type {number}
+   * @memberof VideoRecorderOptions
+   */
+  videoBitrate?: number;
 }
 
 export enum VideoRecorderCamera {

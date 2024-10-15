@@ -40,7 +40,7 @@ export class HomePage implements OnInit, OnDestroy {
   showVideos = false;
   durationIntervalId!: any;
   duration = "00:00";
-  quality = VideoRecorderQuality.HIGHEST;
+  quality = VideoRecorderQuality.MAX_720P;
 
   videoQualityMap = [
     { command: VideoRecorderQuality.HIGHEST, label: 'Highest' },
@@ -112,7 +112,8 @@ export class HomePage implements OnInit, OnDestroy {
     await VideoRecorder.initialize({
       camera: VideoRecorderCamera.BACK,
       previewFrames: [config],
-      quality: this.quality
+      quality: this.quality,
+      videoBitrate: 4500000,
     });
 
     if (this.platform.is('android')) {
@@ -127,30 +128,34 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   async startRecording() {
-    await this.initialise();
-    await VideoRecorder.startRecording();
-    this.isRecording = true;
-    this.showVideos = false;
+    try {
+      await this.initialise();
+      await VideoRecorder.startRecording();
+      this.isRecording = true;
+      this.showVideos = false;
 
-    // lock screen orientation when recording
-    const orientation = await ScreenOrientation.orientation();
+      // lock screen orientation when recording
+      const orientation = await ScreenOrientation.orientation();
 
-    if (this.platform.is('ios')) {
-      // On iOS the landscape-primary and landscape-secondary are flipped for some reason
-      if (orientation.type === 'landscape-primary') {
-        orientation.type = 'landscape-secondary'
-      } else if (orientation.type === 'landscape-secondary') {
-        orientation.type = 'landscape-primary'
+      if (this.platform.is('ios')) {
+        // On iOS the landscape-primary and landscape-secondary are flipped for some reason
+        if (orientation.type === 'landscape-primary') {
+          orientation.type = 'landscape-secondary'
+        } else if (orientation.type === 'landscape-secondary') {
+          orientation.type = 'landscape-primary'
+        }
       }
+
+      await ScreenOrientation.lock({ orientation: orientation.type });
+
+      this.durationIntervalId = setInterval(() => {
+        VideoRecorder.getDuration().then((res) => {
+          this.duration = this.numberToTimeString(res.value);
+        });
+      }, 1000);
+    } catch (error) {
+      console.error(error);
     }
-
-    await ScreenOrientation.lock({ orientation: orientation.type });
-
-    this.durationIntervalId = setInterval(() => {
-      VideoRecorder.getDuration().then((res) => {
-        this.duration = this.numberToTimeString(res.value);
-      });
-    }, 1000);
   }
 
   flipCamera() {

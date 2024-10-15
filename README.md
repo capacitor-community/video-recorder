@@ -113,20 +113,20 @@ The demo app can be found in the Example folder of this repo
 
 <docgen-index>
 
-- [`initialize(...)`](#initialize)
-- [`destroy()`](#destroy)
-- [`flipCamera()`](#flipcamera)
-- [`addPreviewFrameConfig(...)`](#addpreviewframeconfig)
-- [`editPreviewFrameConfig(...)`](#editpreviewframeconfig)
-- [`switchToPreviewFrame(...)`](#switchtopreviewframe)
-- [`showPreviewFrame(...)`](#showpreviewframe)
-- [`hidePreviewFrame()`](#hidepreviewframe)
-- [`startRecording()`](#startrecording)
-- [`stopRecording()`](#stoprecording)
-- [`getDuration()`](#getduration)
-- [`addListener('onVolumeInput', ...)`](#addlisteneronvolumeinput-)
-- [Interfaces](#interfaces)
-- [Enums](#enums)
+* [`initialize(...)`](#initialize)
+* [`destroy()`](#destroy)
+* [`flipCamera()`](#flipcamera)
+* [`addPreviewFrameConfig(...)`](#addpreviewframeconfig)
+* [`editPreviewFrameConfig(...)`](#editpreviewframeconfig)
+* [`switchToPreviewFrame(...)`](#switchtopreviewframe)
+* [`showPreviewFrame(...)`](#showpreviewframe)
+* [`hidePreviewFrame()`](#hidepreviewframe)
+* [`startRecording()`](#startrecording)
+* [`stopRecording()`](#stoprecording)
+* [`getDuration()`](#getduration)
+* [`addListener('onVolumeInput', ...)`](#addlisteneronvolumeinput-)
+* [Interfaces](#interfaces)
+* [Enums](#enums)
 
 </docgen-index>
 
@@ -145,6 +145,7 @@ initialize(options?: VideoRecorderOptions | undefined) => Promise<void>
 
 --------------------
 
+
 ### destroy()
 
 ```typescript
@@ -153,6 +154,7 @@ destroy() => Promise<void>
 
 --------------------
 
+
 ### flipCamera()
 
 ```typescript
@@ -160,6 +162,7 @@ flipCamera() => Promise<void>
 ```
 
 --------------------
+
 
 ### addPreviewFrameConfig(...)
 
@@ -173,6 +176,7 @@ addPreviewFrameConfig(config: VideoRecorderPreviewFrame) => Promise<void>
 
 --------------------
 
+
 ### editPreviewFrameConfig(...)
 
 ```typescript
@@ -184,6 +188,7 @@ editPreviewFrameConfig(config: VideoRecorderPreviewFrame) => Promise<void>
 | **`config`** | <code><a href="#videorecorderpreviewframe">VideoRecorderPreviewFrame</a></code> |
 
 --------------------
+
 
 ### switchToPreviewFrame(...)
 
@@ -197,6 +202,7 @@ switchToPreviewFrame(options: { id: string; }) => Promise<void>
 
 --------------------
 
+
 ### showPreviewFrame(...)
 
 ```typescript
@@ -209,6 +215,7 @@ showPreviewFrame(config: { position: number; quality: number; }) => Promise<void
 
 --------------------
 
+
 ### hidePreviewFrame()
 
 ```typescript
@@ -217,6 +224,7 @@ hidePreviewFrame() => Promise<void>
 
 --------------------
 
+
 ### startRecording()
 
 ```typescript
@@ -224,6 +232,7 @@ startRecording() => Promise<void>
 ```
 
 --------------------
+
 
 ### stopRecording()
 
@@ -235,6 +244,7 @@ stopRecording() => Promise<{ videoUrl: string; }>
 
 --------------------
 
+
 ### getDuration()
 
 ```typescript
@@ -244,6 +254,7 @@ getDuration() => Promise<{ value: number; }>
 **Returns:** <code>Promise&lt;{ value: number; }&gt;</code>
 
 --------------------
+
 
 ### addListener('onVolumeInput', ...)
 
@@ -260,16 +271,20 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 
 --------------------
 
+
 ### Interfaces
+
 
 #### VideoRecorderOptions
 
-| Prop                | Type                                                                  |
-| ------------------- | --------------------------------------------------------------------- |
-| **`camera`**        | <code><a href="#videorecordercamera">VideoRecorderCamera</a></code>   |
-| **`quality`**       | <code><a href="#videorecorderquality">VideoRecorderQuality</a></code> |
-| **`autoShow`**      | <code>boolean</code>                                                  |
-| **`previewFrames`** | <code>VideoRecorderPreviewFrame[]</code>                              |
+| Prop                | Type                                                                  | Description                    | Default              |
+| ------------------- | --------------------------------------------------------------------- | ------------------------------ | -------------------- |
+| **`camera`**        | <code><a href="#videorecordercamera">VideoRecorderCamera</a></code>   |                                |                      |
+| **`quality`**       | <code><a href="#videorecorderquality">VideoRecorderQuality</a></code> |                                |                      |
+| **`autoShow`**      | <code>boolean</code>                                                  |                                |                      |
+| **`previewFrames`** | <code>VideoRecorderPreviewFrame[]</code>                              |                                |                      |
+| **`videoBitrate`**  | <code>number</code>                                                   | The default bitrate is 4.5Mbps | <code>4500000</code> |
+
 
 #### VideoRecorderPreviewFrame
 
@@ -284,13 +299,16 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 | **`borderRadius`**  | <code>number</code>                                                 |
 | **`dropShadow`**    | <code>{ opacity?: number; radius?: number; color?: string; }</code> |
 
+
 #### PluginListenerHandle
 
 | Prop         | Type                                      |
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
+
 ### Enums
+
 
 #### VideoRecorderCamera
 
@@ -298,6 +316,7 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 | ----------- | -------------- |
 | **`FRONT`** | <code>0</code> |
 | **`BACK`**  | <code>1</code> |
+
 
 #### VideoRecorderQuality
 
