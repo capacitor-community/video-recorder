@@ -286,12 +286,14 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 
 #### VideoRecorderOptions
 
-| Prop                | Type                                                                  |
-| ------------------- | --------------------------------------------------------------------- |
-| **`camera`**        | <code><a href="#videorecordercamera">VideoRecorderCamera</a></code>   |
-| **`quality`**       | <code><a href="#videorecorderquality">VideoRecorderQuality</a></code> |
-| **`autoShow`**      | <code>boolean</code>                                                  |
-| **`previewFrames`** | <code>VideoRecorderPreviewFrame[]</code>                              |
+| Prop                | Type                                                                  | Description                    | Default              |
+| ------------------- | --------------------------------------------------------------------- | ------------------------------ | -------------------- |
+| **`camera`**        | <code><a href="#videorecordercamera">VideoRecorderCamera</a></code>   |                                |                      |
+| **`quality`**       | <code><a href="#videorecorderquality">VideoRecorderQuality</a></code> |                                |                      |
+| **`autoShow`**      | <code>boolean</code>                                                  |                                |                      |
+| **`previewFrames`** | <code>VideoRecorderPreviewFrame[]</code>                              |                                |                      |
+| **`videoBitrate`**  | <code>number</code>                                                   | The default bitrate is 4.5Mbps | <code>4500000</code> |
+
 
 
 #### VideoRecorderPreviewFrame

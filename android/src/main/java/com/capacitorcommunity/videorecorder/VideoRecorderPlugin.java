@@ -32,11 +32,10 @@ import co.fitcom.fancycamera.VideoEvent;
 @CapacitorPlugin(
         name = "VideoRecorder",
         requestCodes = {
-                VideoRecorder.REQUEST_CODE
+            868
         }
 )
 public class VideoRecorderPlugin extends Plugin {
-    static final int REQUEST_CODE = 868;
     private FancyCamera fancyCamera;
     private PluginCall call;
     private HashMap<String, FrameConfig> previewFrameConfigs;
@@ -44,6 +43,7 @@ public class VideoRecorderPlugin extends Plugin {
     private FancyCamera.CameraPosition cameraPosition = FancyCamera.CameraPosition.FRONT;
     private Timer audioFeedbackTimer;
     private boolean timerStarted;
+    private Integer videoBitrate = 4500000;
 
     PluginCall getCall() {
         return call;
@@ -122,7 +122,12 @@ public class VideoRecorderPlugin extends Plugin {
         currentFrameConfig = new FrameConfig(defaultFrame);
         previewFrameConfigs = new HashMap<>();
 
+        if (call.getInt("videoBitrate") != null) {
+            videoBitrate = call.getInt("videoBitrate");
+        }
+
         fancyCamera = new FancyCamera(this.getContext());
+        fancyCamera.setMaxVideoBitrate(videoBitrate);
         fancyCamera.setDisableHEVC(true);
         fancyCamera.setListener(new CameraEventListenerUI() {
             public void onCameraOpenUI() {
@@ -174,7 +179,8 @@ public class VideoRecorderPlugin extends Plugin {
                 }
             }
         });
-        final FrameLayout.LayoutParams cameraPreviewParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        final FrameLayout.LayoutParams cameraPreviewParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        fancyCamera.setLayoutParams(cameraPreviewParams);
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -269,9 +275,9 @@ public class VideoRecorderPlugin extends Plugin {
 
     @PluginMethod()
     public void startRecording(PluginCall call) {
-        this.call = call;
+        fancyCamera.setAutoFocus(true);
         fancyCamera.startRecording();
-        // call.success();
+        call.success();
     }
 
     @PluginMethod()
@@ -381,32 +387,59 @@ public class VideoRecorderPlugin extends Plugin {
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int deviceHeight = displayMetrics.heightPixels;
         int deviceWidth = displayMetrics.widthPixels;
-        int width;
-        int height;
+        boolean isLandscape = deviceWidth > deviceHeight;
+
         if (fancyCamera.getLayoutParams() == null) {
             fancyCamera.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
 
+        // Calculate the aspect ratio dimensions
+        int width, height;
+        if (isLandscape) {
+            width = deviceWidth;
+            height = (int) (deviceWidth * 9.0 / 16.0);
+        } else {
+            width = deviceWidth;
+            height = (int) (deviceWidth * 4.0 / 3.0);
+        }
+
+        // If the calculated height is greater than the device height, adjust the width and height
+        if (height > deviceHeight) {
+            height = deviceHeight;
+            width = isLandscape ? (int) (deviceHeight * 16.0 / 9.0) : (int) (deviceHeight * 3.0 / 4.0);
+        }
+
         ViewGroup.LayoutParams oldParams = fancyCamera.getLayoutParams();
 
-        if (frameConfig.width == -1) {
-            width = deviceWidth;
-        } else {
+        if (frameConfig.width != -1) {
             width = getPixels(frameConfig.width);
         }
 
-        if (frameConfig.height == -1) {
-            height = deviceHeight;
-        } else {
+        if (frameConfig.height != -1) {
             height = getPixels(frameConfig.height);
         }
 
         oldParams.width = width;
         oldParams.height = height;
-        //fancyCamera.setY(frameConfig.y);
-        //fancyCamera.setX(frameConfig.x);
-        fancyCamera.setY(getPixels((int) frameConfig.y));
-        fancyCamera.setX(getPixels((int) frameConfig.x));
+        fancyCamera.setLayoutParams(oldParams);
+
+        // Center the preview frame vertically if y is 0 and height and width are -1
+        if (frameConfig.y == 0 && frameConfig.height == -1 && frameConfig.width == -1) {
+            fancyCamera.setY((deviceHeight - height) / 2);
+        } else {
+            fancyCamera.setY(getPixels((int) frameConfig.y));
+        }
+
+        // Center the preview frame horizontally if x is 0 and height and width are -1
+        if (isLandscape && frameConfig.x == 0 && frameConfig.height == -1 && frameConfig.width == -1) {
+            fancyCamera.setX((deviceWidth - width) / 2);
+        } else {
+            fancyCamera.setX(getPixels((int) frameConfig.x));
+        }
+
+        // Set the background color to black
+        ((ViewGroup) fancyCamera.getParent()).setBackgroundColor(Color.BLACK);
+
         fancyCamera.setElevation(9);
         bridge.getWebView().setElevation(9);
         bridge.getWebView().setBackgroundColor(Color.argb(0, 0, 0, 0));

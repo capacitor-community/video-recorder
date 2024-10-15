@@ -8,8 +8,8 @@ extension UIColor {
         if (cString.hasPrefix("#")) {
             cString.remove(at: cString.startIndex)
         }
-        var rgbValue:UInt32 = 0
-        Scanner(string: cString).scanHexInt32(&rgbValue)
+        var rgbValue:UInt64 = 0
+        Scanner(string: cString).scanHexInt64(&rgbValue)
         self.init(
             red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
             green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
@@ -77,7 +77,9 @@ class CameraView: UIView {
                 layer.frame = self.bounds
             }
         }
-        self.videoPreviewLayer?.connection?.videoOrientation = interfaceOrientationToVideoOrientation(UIApplication.shared.statusBarOrientation);
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            self.videoPreviewLayer?.connection?.videoOrientation = interfaceOrientationToVideoOrientation(windowScene.interfaceOrientation)
+        }
     }
 
     func addPreviewLayer(_ previewLayer:AVCaptureVideoPreviewLayer?) {
@@ -152,7 +154,7 @@ public func joinPath(left: String, right: String) -> String {
 }
 
 public func randomFileName() -> String {
-    return NSUUID().uuidString
+    return UUID().uuidString
 }
 
 @objc(VideoRecorder)
@@ -175,6 +177,7 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
     var frontCamera: AVCaptureDevice?
     var backCamera: AVCaptureDevice?
     var quality: Int = 0
+    var videoBitrate: Int = 4500000
 
     var stopRecordingCall: CAPPluginCall?
 
@@ -217,6 +220,7 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
         if (self.captureSession?.isRunning != true) {
             self.currentCamera = call.getInt("camera", 0)
             self.quality = call.getInt("quality", 0)
+            self.videoBitrate = call.getInt("videoBitrate", 4500000)
             let autoShow = call.getBool("autoShow", true)
 
             for frameConfig in call.getArray("previewFrames", [ ["id": "default"] ]) {
@@ -228,7 +232,9 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
                 DispatchQueue.main.async {
                     do {
                         // Set webview to transparent and set the app window background to white
-                        UIApplication.shared.delegate?.window?!.backgroundColor = UIColor.white
+                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                            windowScene.windows.first?.backgroundColor = UIColor.white
+                        }
                         self.capWebView?.isOpaque = false
                         self.capWebView?.backgroundColor = UIColor.clear
 
@@ -580,13 +586,27 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
     @objc func startRecording(_ call: CAPPluginCall) {
         if (self.captureSession != nil) {
             if (!(videoOutput?.isRecording)!) {
-                let tempDir = NSURL.fileURL(withPath:NSTemporaryDirectory(),isDirectory:true)
+                let tempDir = NSURL.fileURL(withPath:NSTemporaryDirectory(), isDirectory: true)
                 var fileName = randomFileName()
                 fileName.append(".mp4")
-                let fileUrl = NSURL.fileURL(withPath: joinPath(left:tempDir.path,right: fileName));
+                let fileUrl = NSURL.fileURL(withPath: joinPath(left: tempDir.path, right: fileName))
+
+                // Configure video output settings
+                let videoSettings: [String: Any] = [
+                    AVVideoCodecKey: AVVideoCodecType.h264,
+                    AVVideoCompressionPropertiesKey: [
+                        AVVideoAverageBitRateKey: self.videoBitrate
+                    ]
+                ]
+
+                if let connection = self.videoOutput?.connection(with: .video) {
+                    self.videoOutput?.setOutputSettings(videoSettings, for: connection)
+                }
 
                 DispatchQueue.main.async {
-                    self.videoOutput?.connection(with: .video)?.videoOrientation = self.cameraView.interfaceOrientationToVideoOrientation(UIApplication.shared.statusBarOrientation)
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                        self.videoOutput?.connection(with: .video)?.videoOrientation = self.cameraView.interfaceOrientationToVideoOrientation(windowScene.interfaceOrientation)
+                    }
                     self.videoOutput?.startRecording(to: fileUrl, recordingDelegate: self)
                     call.resolve()
                 }
