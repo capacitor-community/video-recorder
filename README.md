@@ -295,7 +295,6 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 | **`videoBitrate`**  | <code>number</code>                                                   | The default bitrate is 4.5Mbps | <code>4500000</code> |
 
 
-
 #### VideoRecorderPreviewFrame
 
 | Prop                | Type                                                                |
