@@ -20,8 +20,7 @@ import {
   cameraReverseOutline,
   folderOutline,
   folderOpenOutline,
-  settingsOutline
-} from 'ionicons/icons';
+  settingsOutline, videocamOffOutline, flashOutline, flashOffOutline } from 'ionicons/icons';
 import { Filesystem } from '@capacitor/filesystem';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 
@@ -41,6 +40,9 @@ export class HomePage implements OnInit, OnDestroy {
   durationIntervalId!: any;
   duration = "00:00";
   quality = VideoRecorderQuality.MAX_720P;
+  isFlashEnabled = false;
+  cameraSide = VideoRecorderCamera.BACK;
+  CAMERA_BACK = VideoRecorderCamera.BACK;
 
   videoQualityMap = [
     { command: VideoRecorderQuality.HIGHEST, label: 'Highest' },
@@ -53,14 +55,7 @@ export class HomePage implements OnInit, OnDestroy {
   ]
 
   constructor() {
-    addIcons({
-      videocam,
-      stopCircleOutline,
-      cameraReverseOutline,
-      folderOutline,
-      folderOpenOutline,
-      settingsOutline
-    })
+    addIcons({videocamOffOutline,videocam,stopCircleOutline,cameraReverseOutline,flashOutline,flashOffOutline,settingsOutline,folderOutline,folderOpenOutline});
   }
 
   ngOnInit() {
@@ -110,11 +105,14 @@ export class HomePage implements OnInit, OnDestroy {
       return;
     }
     await VideoRecorder.initialize({
-      camera: VideoRecorderCamera.BACK,
+      camera: this.cameraSide,
       previewFrames: [config],
       quality: this.quality,
       videoBitrate: 4500000,
     });
+
+    const { isEnabled } = await VideoRecorder.isFlashEnabled();
+    this.isFlashEnabled = isEnabled;
 
     if (this.platform.is('android')) {
       // Only used by Android
@@ -159,6 +157,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   flipCamera() {
+    this.cameraSide = this.cameraSide === VideoRecorderCamera.BACK ? VideoRecorderCamera.FRONT : VideoRecorderCamera.BACK;
     VideoRecorder.flipCamera();
   }
 
@@ -216,5 +215,10 @@ export class HomePage implements OnInit, OnDestroy {
   async destroyCamera() {
     await VideoRecorder.destroy();
     this.initialized = false;
+  }
+
+  async toggleFlash() {
+    this.isFlashEnabled = !this.isFlashEnabled;
+    await VideoRecorder.toggleFlash();
   }
 }

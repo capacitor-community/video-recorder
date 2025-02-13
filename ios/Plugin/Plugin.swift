@@ -641,4 +641,37 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
             call.resolve(["value":0])
         }
     }
+
+    @objc func isFlashEnabled(_ call: CAPPluginCall) {
+        if (self.captureSession != nil) {
+            let device = AVCaptureDevice.default(for: .video)
+            if (device != nil) {
+                call.resolve(["isEnabled":device!.hasTorch])
+            } else {
+                call.resolve(["isEnabled":false])
+            }
+        }
+    }
+
+    @objc func toggleFlash(_ call: CAPPluginCall) {
+        if (self.captureSession != nil) {
+            let device = AVCaptureDevice.default(for: .video)
+            if (device != nil) {
+                do {
+                    try device!.lockForConfiguration()
+                    if (device!.torchMode == AVCaptureDevice.TorchMode.off) {
+                        try device!.setTorchModeOn(level: 1.0)
+                    } else {
+                        device!.torchMode = AVCaptureDevice.TorchMode.off
+                    }
+                    device!.unlockForConfiguration()
+                    call.resolve()
+                } catch {
+                    call.reject("Failed to toggle flash")
+                }
+            } else {
+                call.reject("No video device found")
+            }
+        }
+    }
 }

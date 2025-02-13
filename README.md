@@ -125,6 +125,8 @@ The demo app can be found in the Example folder of this repo
 * [`initialize(...)`](#initialize)
 * [`destroy()`](#destroy)
 * [`flipCamera()`](#flipcamera)
+* [`toggleFlash()`](#toggleflash)
+* [`isFlashEnabled()`](#isflashenabled)
 * [`addPreviewFrameConfig(...)`](#addpreviewframeconfig)
 * [`editPreviewFrameConfig(...)`](#editpreviewframeconfig)
 * [`switchToPreviewFrame(...)`](#switchtopreviewframe)
@@ -169,6 +171,26 @@ destroy() => Promise<void>
 ```typescript
 flipCamera() => Promise<void>
 ```
+
+--------------------
+
+
+### toggleFlash()
+
+```typescript
+toggleFlash() => Promise<void>
+```
+
+--------------------
+
+
+### isFlashEnabled()
+
+```typescript
+isFlashEnabled() => Promise<{ isEnabled: boolean; }>
+```
+
+**Returns:** <code>Promise&lt;{ isEnabled: boolean; }&gt;</code>
 
 --------------------
 

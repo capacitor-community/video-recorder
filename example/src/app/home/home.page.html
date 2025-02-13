@@ -48,6 +48,12 @@
     <ion-button *ngIf="!isRecording" (click)="flipCamera()">
       <ion-icon name="camera-reverse-outline"></ion-icon>
     </ion-button>
+    <ion-button *ngIf="isFlashEnabled && cameraSide === CAMERA_BACK" (click)="toggleFlash()">
+      <ion-icon name="flash-outline"></ion-icon>
+    </ion-button>
+    <ion-button *ngIf="!isFlashEnabled && cameraSide === CAMERA_BACK" (click)="toggleFlash()">
+      <ion-icon name="flash-off-outline"></ion-icon>
+    </ion-button>
     <ion-button *ngIf="!isRecording" (click)="toggleVideos()">
       <ion-icon [name]="showVideos ? 'folder-open-outline' : 'folder-outline'"></ion-icon>
     </ion-button>
