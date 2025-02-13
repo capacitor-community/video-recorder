@@ -54,10 +54,7 @@ export class VideoRecorderWeb extends WebPlugin implements VideoRecorderPlugin {
 	currentFrameConfig: FrameConfig = new FrameConfig({id: 'default'});
 
 	constructor() {
-		super({
-			name: 'VideoRecorder',
-			platforms: ['web']
-		});
+		super();
 	}
 
 	private _initializeCameraView() {
