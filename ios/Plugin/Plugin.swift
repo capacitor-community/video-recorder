@@ -645,10 +645,10 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
     @objc func isFlashEnabled(_ call: CAPPluginCall) {
         if (self.captureSession != nil) {
             let device = AVCaptureDevice.default(for: .video)
-            if (device != nil) {
-                call.resolve(["isEnabled":device!.hasTorch])
+            if let device = device {
+                call.resolve(["isEnabled": device.torchMode == AVCaptureDevice.TorchMode.on])
             } else {
-                call.resolve(["isEnabled":false])
+                call.resolve(["isEnabled": false])
             }
         }
     }
