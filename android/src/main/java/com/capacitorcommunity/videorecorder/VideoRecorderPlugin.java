@@ -55,9 +55,9 @@ public class VideoRecorderPlugin extends Plugin {
 
         if (fancyCamera.hasPermission()) {
             if (getCall() != null) {
-                getCall().success();
+                getCall().resolve();
             } else if (savedLastCall != null) {
-                savedLastCall.success();
+                savedLastCall.resolve();
             }
             startCamera();
         } else {
@@ -132,7 +132,7 @@ public class VideoRecorderPlugin extends Plugin {
         fancyCamera.setListener(new CameraEventListenerUI() {
             public void onCameraOpenUI() {
                 if (getCall() != null) {
-                    getCall().success();
+                    getCall().resolve();
                 }
                 startTimer();
                 updateCameraView(currentFrameConfig);
@@ -143,7 +143,7 @@ public class VideoRecorderPlugin extends Plugin {
 
             public void onCameraCloseUI() {
                 if (getCall() != null) {
-                    getCall().success();
+                    getCall().resolve();
                 }
                 stopTimer();
             }
@@ -173,7 +173,7 @@ public class VideoRecorderPlugin extends Plugin {
                         event
                                 .getMessage().contains(VideoEvent.EventInfo.RECORDING_STARTED.toString())) {
                     if (getCall() != null) {
-                        getCall().success();
+                        getCall().resolve();
                     }
 
                 }
@@ -239,7 +239,7 @@ public class VideoRecorderPlugin extends Plugin {
             }
         });
         fancyCamera.release();
-        call.success();
+        call.resolve();
     }
 
     private void makeOpaque() {
@@ -257,7 +257,7 @@ public class VideoRecorderPlugin extends Plugin {
             startCamera();
             this.call = call;
         } else {
-            call.success();
+            call.resolve();
         }
     }
 
@@ -277,7 +277,7 @@ public class VideoRecorderPlugin extends Plugin {
     public void startRecording(PluginCall call) {
         fancyCamera.setAutoFocus(true);
         fancyCamera.startRecording();
-        call.success();
+        call.resolve();
     }
 
     @PluginMethod()
@@ -289,20 +289,20 @@ public class VideoRecorderPlugin extends Plugin {
     @PluginMethod()
     public void flipCamera(PluginCall call) {
         fancyCamera.toggleCamera();
-        call.success();
+        call.resolve();
     }
 
     @PluginMethod()
     public void toggleFlash(PluginCall call) {
         fancyCamera.toggleFlash();
-        call.success();
+        call.resolve();
     }
 
     @PluginMethod()
     public void isFlashEnabled(PluginCall call) {
         JSObject object = new JSObject();
         object.put("isEnabled", fancyCamera.flashEnabled());
-        call.success(object);
+        call.resolve(object);
     }
 
     @PluginMethod()
@@ -329,7 +329,7 @@ public class VideoRecorderPlugin extends Plugin {
         if (fancyCamera != null && fancyCamera.cameraStarted()) {
             String layerId = call.getString("id");
             if (layerId.isEmpty()) {
-                call.error("Must provide layer id");
+                call.reject("Must provide layer id");
                 return;
             }
 
@@ -341,7 +341,7 @@ public class VideoRecorderPlugin extends Plugin {
             } else {
                 previewFrameConfigs.put(layerId, config);
             }
-            call.success();
+            call.resolve();
         }
     }
 
@@ -350,7 +350,7 @@ public class VideoRecorderPlugin extends Plugin {
         if (fancyCamera != null && fancyCamera.cameraStarted()) {
             String layerId = call.getString("id");
             if (layerId.isEmpty()) {
-                call.error("Must provide layer id");
+                call.reject("Must provide layer id");
                 return;
             }
 
@@ -362,7 +362,7 @@ public class VideoRecorderPlugin extends Plugin {
                 updateCameraView(currentFrameConfig);
             }
 
-            call.success();
+            call.resolve();
         }
     }
 
@@ -372,7 +372,7 @@ public class VideoRecorderPlugin extends Plugin {
         if (fancyCamera != null && fancyCamera.cameraStarted()) {
             String layerId = call.getString("id");
             if (layerId.isEmpty()) {
-                call.error("Must provide layer id");
+                call.reject("Must provide layer id");
                 return;
             }
             FrameConfig existingConfig = previewFrameConfigs.get(layerId);
@@ -383,10 +383,10 @@ public class VideoRecorderPlugin extends Plugin {
                 }
 
             } else {
-                call.error("Frame config does not exist");
+                call.reject("Frame config does not exist");
                 return;
             }
-            call.success();
+            call.resolve();
         }
     }
 
