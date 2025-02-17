@@ -141,15 +141,6 @@ export class HomePage implements OnInit, OnDestroy {
       // lock screen orientation when recording
       const orientation = await ScreenOrientation.orientation();
 
-      if (this.platform.is('ios')) {
-        // On iOS the landscape-primary and landscape-secondary are flipped for some reason
-        if (orientation.type === 'landscape-primary') {
-          orientation.type = 'landscape-secondary'
-        } else if (orientation.type === 'landscape-secondary') {
-          orientation.type = 'landscape-primary'
-        }
-      }
-
       await ScreenOrientation.lock({ orientation: orientation.type });
 
       this.durationIntervalId = setInterval(() => {
