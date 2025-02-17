@@ -306,6 +306,13 @@ public class VideoRecorderPlugin extends Plugin {
     }
 
     @PluginMethod()
+    public void isFlashAvailable(PluginCall call) {
+        JSObject object = new JSObject();
+        object.put("isAvailable", fancyCamera.hasFlash());
+        call.success(object);
+    }
+
+    @PluginMethod()
     public void getDuration(PluginCall call) {
         JSObject object = new JSObject();
         object.put("value", fancyCamera.getDuration());

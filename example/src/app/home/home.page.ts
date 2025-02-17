@@ -40,6 +40,7 @@ export class HomePage implements OnInit, OnDestroy {
   durationIntervalId!: any;
   duration = "00:00";
   quality = VideoRecorderQuality.MAX_720P;
+  isFlashAvailable = false;
   isFlashEnabled = false;
   cameraSide = VideoRecorderCamera.BACK;
   CAMERA_BACK = VideoRecorderCamera.BACK;
@@ -111,8 +112,13 @@ export class HomePage implements OnInit, OnDestroy {
       videoBitrate: 4500000,
     });
 
-    const { isEnabled } = await VideoRecorder.isFlashEnabled();
-    this.isFlashEnabled = isEnabled;
+    const { isAvailable } = await VideoRecorder.isFlashAvailable();
+    this.isFlashAvailable = isAvailable;
+
+    if (this.isFlashAvailable) {
+      const { isEnabled } = await VideoRecorder.isFlashEnabled();
+      this.isFlashEnabled = isEnabled;
+    }
 
     if (this.platform.is('android')) {
       // Only used by Android
