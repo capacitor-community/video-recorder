@@ -642,6 +642,17 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
         }
     }
 
+    @objc func isFlashAvailable(_ call: CAPPluginCall) {
+        if (self.captureSession != nil) {
+            let device = AVCaptureDevice.default(for: .video)
+            if let device = device {
+                call.resolve(["isAvailable": device.hasTorch])
+            } else {
+                call.resolve(["isAvailable": false])
+            }
+        }
+    }
+
     @objc func isFlashEnabled(_ call: CAPPluginCall) {
         if (self.captureSession != nil) {
             let device = AVCaptureDevice.default(for: .video)

@@ -7,7 +7,7 @@ class DropShadow {
 	radius?: number;
 	color?: string;
 
-	constructor(options: DropShadow = <DropShadow>{}) {
+	constructor(options: DropShadow = {} as DropShadow) {
 		this.opacity = options.opacity || 0;
 		this.radius = options.radius || 0;
 		this.color = hexToRgb(options.color || '#000000') || '#000000';
@@ -33,7 +33,7 @@ class FrameConfig {
 	borderRadius?: number;
 	dropShadow?: DropShadow;
 
-	constructor(options: FrameConfig = <FrameConfig>{}) {
+	constructor(options: FrameConfig = {} as FrameConfig) {
 		this.id = options.id;
 		this.stackPosition = options.stackPosition || 'back';
 		this.x = options.x || 0;
@@ -198,5 +198,10 @@ export class VideoRecorderWeb extends WebPlugin implements VideoRecorderPlugin {
 	isFlashEnabled(): Promise<{ isEnabled: boolean; }> {
 		console.warn('VideoRecorder: No web mock available for isFlashEnabled');
 		return Promise.resolve({ isEnabled: false });
+	}
+
+	isFlashAvailable(): Promise<{ isAvailable: boolean; }> {
+		console.warn('VideoRecorder: No web mock available for isFlashAvailable');
+		return Promise.resolve({ isAvailable: false });
 	}
 }
