@@ -177,7 +177,7 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
     var frontCamera: AVCaptureDevice?
     var backCamera: AVCaptureDevice?
     var quality: Int = 0
-    var videoBitrate: Int = 4500000
+    var videoBitrate: Int = 3000000
 
     var stopRecordingCall: CAPPluginCall?
 
@@ -220,7 +220,7 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
         if (self.captureSession?.isRunning != true) {
             self.currentCamera = call.getInt("camera", 0)
             self.quality = call.getInt("quality", 0)
-            self.videoBitrate = call.getInt("videoBitrate", 4500000)
+            self.videoBitrate = call.getInt("videoBitrate", 3000000)
             let autoShow = call.getBool("autoShow", true)
 
             for frameConfig in call.getArray("previewFrames", [ ["id": "default"] ]) {
