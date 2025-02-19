@@ -1,6 +1,6 @@
 {
   "name": "@capacitor-community/video-recorder",
-  "version": "7.1.1",
+  "version": "7.1.2",
   "private": false,
   "description": "capacitor plugin to record video",
   "main": "dist/plugin.cjs.js",
