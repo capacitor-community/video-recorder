@@ -178,6 +178,7 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
     var backCamera: AVCaptureDevice?
     var quality: Int = 0
     var videoBitrate: Int = 3000000
+    var _isFlashEnabled: Bool = false
 
     var stopRecordingCall: CAPPluginCall?
 
@@ -216,6 +217,9 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
     @objc func initialize(_ call: CAPPluginCall) {
         // log to console for initializing
         print("Initializing camera")
+
+        // flash is turned off by default when initializing camera to match android behavior
+        self._isFlashEnabled = false;
 
         if (self.captureSession?.isRunning != true) {
             self.currentCamera = call.getInt("camera", 0)
@@ -607,6 +611,19 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
                     if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
                         self.videoOutput?.connection(with: .video)?.videoOrientation = self.cameraView.interfaceOrientationToVideoOrientation(windowScene.interfaceOrientation)
                     }
+                    // turn on flash if flash is enabled and camera is back camera
+                    if (self.currentCamera == 1 && self._isFlashEnabled) {
+                        let device = AVCaptureDevice.default(for: .video)
+                        if let device = device {
+                            do {
+                                try device.lockForConfiguration()
+                                try device.setTorchModeOn(level: 1.0)
+                                device.unlockForConfiguration()
+                            } catch {
+                                // ignore error
+                            }
+                        }
+                    }
                     self.videoOutput?.startRecording(to: fileUrl, recordingDelegate: self)
                     call.resolve()
                 }
@@ -622,6 +639,20 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
             if (videoOutput?.isRecording)! {
                 self.stopRecordingCall = call
                 self.videoOutput!.stopRecording()
+
+                // turn off flash if flash is enabled and camera is back camera
+                if (self.currentCamera == 1 && self._isFlashEnabled) {
+                    let device = AVCaptureDevice.default(for: .video)
+                    if let device = device {
+                        do {
+                            try device.lockForConfiguration()
+                            device.torchMode = .off
+                            device.unlockForConfiguration()
+                        } catch {
+                            // ignore error
+                        }
+                    }
+                }
             }
         }
     }
@@ -654,35 +685,19 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
     }
 
     @objc func isFlashEnabled(_ call: CAPPluginCall) {
-        if (self.captureSession != nil) {
-            let device = AVCaptureDevice.default(for: .video)
-            if let device = device {
-                call.resolve(["isEnabled": device.torchMode == AVCaptureDevice.TorchMode.on])
-            } else {
-                call.resolve(["isEnabled": false])
-            }
+        if (self.currentCamera == 0) {
+            call.resolve(["isEnabled": false])
+        } else {
+            call.resolve(["isEnabled": self._isFlashEnabled])
         }
     }
 
     @objc func toggleFlash(_ call: CAPPluginCall) {
-        if (self.captureSession != nil) {
-            let device = AVCaptureDevice.default(for: .video)
-            if (device != nil) {
-                do {
-                    try device!.lockForConfiguration()
-                    if (device!.torchMode == AVCaptureDevice.TorchMode.off) {
-                        try device!.setTorchModeOn(level: 1.0)
-                    } else {
-                        device!.torchMode = AVCaptureDevice.TorchMode.off
-                    }
-                    device!.unlockForConfiguration()
-                    call.resolve()
-                } catch {
-                    call.reject("Failed to toggle flash")
-                }
-            } else {
-                call.reject("No video device found")
-            }
+        if (self.currentCamera == 0) {
+            call.reject("Flash not available on front camera")
+        } else {
+            self._isFlashEnabled = !self._isFlashEnabled
+            call.resolve()
         }
     }
 }
