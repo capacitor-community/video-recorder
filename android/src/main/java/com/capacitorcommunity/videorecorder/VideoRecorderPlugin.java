@@ -43,7 +43,7 @@ public class VideoRecorderPlugin extends Plugin {
     private FancyCamera.CameraPosition cameraPosition = FancyCamera.CameraPosition.FRONT;
     private Timer audioFeedbackTimer;
     private boolean timerStarted;
-    private Integer videoBitrate = 4500000;
+    private Integer videoBitrate = 3000000;
 
     PluginCall getCall() {
         return call;
@@ -122,12 +122,10 @@ public class VideoRecorderPlugin extends Plugin {
         currentFrameConfig = new FrameConfig(defaultFrame);
         previewFrameConfigs = new HashMap<>();
 
-        if (call.getInt("videoBitrate") != null) {
-            videoBitrate = call.getInt("videoBitrate");
-        }
+        this.videoBitrate = call.getInt("videoBitrate", 3000000);
 
         fancyCamera = new FancyCamera(this.getContext());
-        fancyCamera.setMaxVideoBitrate(videoBitrate);
+        fancyCamera.setMaxVideoBitrate(this.videoBitrate);
         fancyCamera.setDisableHEVC(true);
         fancyCamera.setListener(new CameraEventListenerUI() {
             public void onCameraOpenUI() {
