@@ -5,6 +5,8 @@ export interface VideoRecorderPlugin {
   destroy(): Promise<void>;
   flipCamera(): Promise<void>;
   toggleFlash(): Promise<void>;
+  enableFlash(): Promise<void>;
+  disableFlash(): Promise<void>;
   isFlashAvailable(): Promise<{ isAvailable: boolean }>;
   isFlashEnabled(): Promise<{ isEnabled: boolean }>;
   addPreviewFrameConfig(config: VideoRecorderPreviewFrame): Promise<void>;

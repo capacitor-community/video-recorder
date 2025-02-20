@@ -8,6 +8,8 @@ CAP_PLUGIN(VideoRecorder, "VideoRecorder",
 	CAP_PLUGIN_METHOD(destroy, CAPPluginReturnPromise);
 	CAP_PLUGIN_METHOD(flipCamera, CAPPluginReturnPromise);
 	CAP_PLUGIN_METHOD(toggleFlash, CAPPluginReturnPromise);
+	CAP_PLUGIN_METHOD(enableFlash, CAPPluginReturnPromise);
+	CAP_PLUGIN_METHOD(disableFlash, CAPPluginReturnPromise);
 	CAP_PLUGIN_METHOD(isFlashAvailable, CAPPluginReturnPromise);
 	CAP_PLUGIN_METHOD(isFlashEnabled, CAPPluginReturnPromise);
 	CAP_PLUGIN_METHOD(addPreviewFrameConfig, CAPPluginReturnPromise);

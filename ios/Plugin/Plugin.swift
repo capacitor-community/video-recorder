@@ -218,7 +218,7 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
         // log to console for initializing
         print("Initializing camera")
 
-        // flash is turned off by default when initializing camera to match android behavior
+        // flash is turned off by default when initializing camera
         self._isFlashEnabled = false;
 
         if (self.captureSession?.isRunning != true) {
@@ -685,19 +685,21 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
     }
 
     @objc func isFlashEnabled(_ call: CAPPluginCall) {
-        if (self.currentCamera == 0) {
-            call.resolve(["isEnabled": false])
-        } else {
-            call.resolve(["isEnabled": self._isFlashEnabled])
-        }
+        call.resolve(["isEnabled": self._isFlashEnabled])
+    }
+
+    @objc func enableFlash(_ call: CAPPluginCall) {
+        self._isFlashEnabled = true
+        call.resolve()
+    }
+
+    @objc func disableFlash(_ call: CAPPluginCall) {
+        self._isFlashEnabled = false
+        call.resolve()
     }
 
     @objc func toggleFlash(_ call: CAPPluginCall) {
-        if (self.currentCamera == 0) {
-            call.reject("Flash not available on front camera")
-        } else {
-            self._isFlashEnabled = !self._isFlashEnabled
-            call.resolve()
-        }
+        self._isFlashEnabled = !self._isFlashEnabled
+        call.resolve()
     }
 }
