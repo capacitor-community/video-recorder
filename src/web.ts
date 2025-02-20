@@ -192,6 +192,16 @@ export class VideoRecorderWeb extends WebPlugin implements VideoRecorderPlugin {
 		return Promise.resolve();
 	}
 
+	enableFlash(): Promise<void> {
+		console.warn('VideoRecorder: No web mock available for enableFlash');
+		return Promise.resolve();
+	}
+
+	disableFlash(): Promise<void> {
+		console.warn('VideoRecorder: No web mock available for disableFlash');
+		return Promise.resolve();
+	}
+
 	isFlashEnabled(): Promise<{ isEnabled: boolean; }> {
 		console.warn('VideoRecorder: No web mock available for isFlashEnabled');
 		return Promise.resolve({ isEnabled: false });

@@ -44,6 +44,7 @@ public class VideoRecorderPlugin extends Plugin {
     private Timer audioFeedbackTimer;
     private boolean timerStarted;
     private Integer videoBitrate = 3000000;
+    private boolean _isFlashEnabled = false;
 
     PluginCall getCall() {
         return call;
@@ -123,6 +124,9 @@ public class VideoRecorderPlugin extends Plugin {
         previewFrameConfigs = new HashMap<>();
 
         this.videoBitrate = call.getInt("videoBitrate", 3000000);
+
+        // flash is turned off by default when initializing camera
+        this._isFlashEnabled = false;
 
         fancyCamera = new FancyCamera(this.getContext());
         fancyCamera.setMaxVideoBitrate(this.videoBitrate);
@@ -274,6 +278,12 @@ public class VideoRecorderPlugin extends Plugin {
     @PluginMethod()
     public void startRecording(PluginCall call) {
         fancyCamera.setAutoFocus(true);
+
+        // turn on flash if flash is enabled and camera is back camera
+        if (this._isFlashEnabled && fancyCamera.getCameraPosition() == 0) {
+            fancyCamera.enableFlash();
+        }
+
         fancyCamera.startRecording();
         call.resolve();
     }
@@ -281,6 +291,12 @@ public class VideoRecorderPlugin extends Plugin {
     @PluginMethod()
     public void stopRecording(PluginCall call) {
         this.call = call;
+
+        // turn off flash if flash is enabled and camera is back camera
+        if (this._isFlashEnabled && fancyCamera.getCameraPosition() == 0) {
+            fancyCamera.disableFlash();
+        }
+
         fancyCamera.stopRecording();
     }
 
@@ -291,15 +307,27 @@ public class VideoRecorderPlugin extends Plugin {
     }
 
     @PluginMethod()
+    public void enableFlash(PluginCall call) {
+        this._isFlashEnabled = true;
+        call.success();
+    }
+
+    @PluginMethod()
+    public void disableFlash(PluginCall call) {
+        this._isFlashEnabled = false;
+        call.success();
+    }
+
+    @PluginMethod()
     public void toggleFlash(PluginCall call) {
-        fancyCamera.toggleFlash();
+        this._isFlashEnabled = !this._isFlashEnabled;
         call.resolve();
     }
 
     @PluginMethod()
     public void isFlashEnabled(PluginCall call) {
         JSObject object = new JSObject();
-        object.put("isEnabled", fancyCamera.flashEnabled());
+        object.put("isEnabled", this._isFlashEnabled);
         call.resolve(object);
     }
 
@@ -307,7 +335,7 @@ public class VideoRecorderPlugin extends Plugin {
     public void isFlashAvailable(PluginCall call) {
         JSObject object = new JSObject();
         object.put("isAvailable", fancyCamera.hasFlash());
-        call.success(object);
+        call.resolve(object);
     }
 
     @PluginMethod()
