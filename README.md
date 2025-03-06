@@ -2,17 +2,24 @@
 <h3 align="center">VIDEO RECORDER</h3>
 <p align="center"><strong><code>@capacitor-community/video-recorder</code></strong></p>
 <br>
-<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 5</strong></p><br>
+<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 7</strong></p><br>
 <br>
 
 capacitor plugin to record video
 
 ## Install
 
-Capacitor v6
+Capacitor v7
 
 ```bash
 npm install @capacitor-community/video-recorder
+npx cap sync
+```
+
+Capacitor v6
+
+```bash
+npm install @capacitor-community/video-recorder@6
 npx cap sync
 ```
 
