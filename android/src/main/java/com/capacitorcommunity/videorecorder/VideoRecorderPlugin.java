@@ -309,13 +309,13 @@ public class VideoRecorderPlugin extends Plugin {
     @PluginMethod()
     public void enableFlash(PluginCall call) {
         this._isFlashEnabled = true;
-        call.success();
+        call.resolve();
     }
 
     @PluginMethod()
     public void disableFlash(PluginCall call) {
         this._isFlashEnabled = false;
-        call.success();
+        call.resolve();
     }
 
     @PluginMethod()
