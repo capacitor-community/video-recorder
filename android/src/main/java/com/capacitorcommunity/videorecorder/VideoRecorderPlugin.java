@@ -512,6 +512,17 @@ public class VideoRecorderPlugin extends Plugin {
             });
         }
 
+        // Apply mirroring if needed (front camera and mirror true)
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (fancyCamera.getCameraPosition() == 1 && frameConfig.mirror) { // 1 = front camera (see initialize)
+                    fancyCamera.setScaleX(-1f);
+                } else {
+                    fancyCamera.setScaleX(1f);
+                }
+            }
+        });
     }
 
 
@@ -524,6 +535,7 @@ public class VideoRecorderPlugin extends Plugin {
         int height;
         float borderRadius;
         DropShadow dropShadow;
+        boolean mirror;
 
         FrameConfig(JSObject object) {
             id = object.getString("id");
@@ -535,6 +547,11 @@ public class VideoRecorderPlugin extends Plugin {
             borderRadius = object.getInteger("borderRadius", 0);
             JSObject ds = object.getJSObject("dropShadow");
             dropShadow = new DropShadow(ds != null ? ds : new JSObject());
+            if (object.has("mirror")) {
+                mirror = object.getBool("mirror");
+            } else {
+                mirror = true;
+            }
         }
 
         class DropShadow {

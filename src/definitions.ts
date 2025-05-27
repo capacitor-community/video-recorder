@@ -39,6 +39,11 @@ export interface VideoRecorderPreviewFrame {
     radius?: number;
     color?: string;
   };
+  /**
+   * Whether to mirror the camera preview horizontally (useful for front camera).
+   * @default true
+   */
+  mirror?: boolean;
 }
 
 export interface VideoRecorderErrors {
@@ -46,7 +51,7 @@ export interface VideoRecorderErrors {
   CAMERA_DENIED: string;
   MICROPHONE_RESTRICTED: string;
   MICROPHONE_DENIED: string;
-};
+}
 export interface VideoRecorderOptions {
   camera?: VideoRecorderCamera;
   quality?: VideoRecorderQuality;
