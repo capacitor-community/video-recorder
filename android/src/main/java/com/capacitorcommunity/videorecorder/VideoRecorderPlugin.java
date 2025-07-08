@@ -1,9 +1,12 @@
 package com.capacitorcommunity.videorecorder;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 import com.getcapacitor.JSArray;
@@ -45,6 +48,7 @@ public class VideoRecorderPlugin extends Plugin {
     private boolean timerStarted;
     private Integer videoBitrate = 3000000;
     private boolean _isFlashEnabled = false;
+    private Integer previousBackgroundColor = null;
 
     PluginCall getCall() {
         return call;
@@ -234,12 +238,18 @@ public class VideoRecorderPlugin extends Plugin {
     @PluginMethod()
     public void destroy(PluginCall call) {
         makeOpaque();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((ViewGroup) bridge.getWebView().getParent()).removeView(fancyCamera);
+
+        getActivity().runOnUiThread(() -> {
+            ViewParent parent = fancyCamera.getParent();
+            if (parent instanceof ViewGroup parentGroup) {
+                if (previousBackgroundColor != null) {
+                    parentGroup.setBackgroundColor(previousBackgroundColor);
+                    previousBackgroundColor = null;
+                }
+                ((ViewGroup) parent).removeView(fancyCamera);
             }
         });
+
         fancyCamera.release();
         call.resolve();
     }
@@ -478,13 +488,19 @@ public class VideoRecorderPlugin extends Plugin {
 
         // Center the preview frame horizontally if x is 0 and height and width are -1
         if (isLandscape && frameConfig.x == 0 && frameConfig.height == -1 && frameConfig.width == -1) {
-            fancyCamera.setX((deviceWidth - width) / 2);
+            fancyCamera.setX((float) (deviceWidth - width) / 2);
         } else {
             fancyCamera.setX(getPixels((int) frameConfig.x));
         }
 
         // Set the background color to black
-        ((ViewGroup) fancyCamera.getParent()).setBackgroundColor(Color.BLACK);
+        ViewParent parent = fancyCamera.getParent();
+        if (parent instanceof ViewGroup parentGroup) {
+            if (parentGroup.getBackground() instanceof ColorDrawable colorDrawable) {
+                previousBackgroundColor = colorDrawable.getColor();
+            }
+            parentGroup.setBackgroundColor(Color.BLACK);
+        }
 
         fancyCamera.setElevation(9);
         bridge.getWebView().setElevation(9);
