@@ -28,7 +28,7 @@ public class FrameConfig {
     var height: Any
     var borderRadius: CGFloat
     var dropShadow: DropShadow
-    var mirror: Bool
+    var mirrorFrontCam: Bool
 
     init(_ options: [AnyHashable: Any] = [:]) {
         self.id = options["id"] as! String
@@ -39,8 +39,7 @@ public class FrameConfig {
         self.height = options["height"] ?? "fill"
         self.borderRadius = options["borderRadius"] as? CGFloat ?? 0
         self.dropShadow = DropShadow(options["dropShadow"] as? [AnyHashable: Any] ?? [:])
-        self.mirror = options["mirror"] as? Bool ?? true
-    }
+        self.mirrorFrontCam = options["mirrorFrontCam"] as? Bool ?? true
     }
 
     class DropShadow {
@@ -434,6 +433,12 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
                 self.captureSession!.addInput(input!)
                 self.cameraInput = input
                 self.captureSession?.commitConfiguration()
+
+                // Update camera view to apply correct mirroring for the new camera
+                DispatchQueue.main.async {
+                    self.updateCameraView(self.currentFrameConfig)
+                }
+
                 call.resolve();
             }
         }
@@ -586,15 +591,10 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
         self.cameraView.layer.shadowRadius = config.dropShadow.radius
         self.cameraView.layer.shadowPath = UIBezierPath(roundedRect: self.cameraView.bounds, cornerRadius: config.borderRadius).cgPath
 
-        // Set mirroring for front camera
+        // Set mirroring based on config.mirrorFrontCam property (only for front camera, mirrored by default)
         if let connection = self.cameraView.videoPreviewLayer?.connection {
-            if self.currentCamera == 0 { // 0 = front camera
-                connection.automaticallyAdjustsVideoMirroring = true
-                connection.isVideoMirrored = config.mirror
-            } else {
-                connection.automaticallyAdjustsVideoMirroring = false
-                connection.isVideoMirrored = false
-            }
+            connection.automaticallyAdjustsVideoMirroring = false
+            connection.isVideoMirrored = self.currentCamera == 0 ? config.mirrorFrontCam : false
         }
     }
 
@@ -624,6 +624,12 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
                 DispatchQueue.main.async {
                     if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
                         self.videoOutput?.connection(with: .video)?.videoOrientation = self.cameraView.interfaceOrientationToVideoOrientation(windowScene.interfaceOrientation)
+                    }
+
+                    // Apply mirroring setting to video output connection (saved video should never be mirrored to match Android behavior)
+                    if let connection = self.videoOutput?.connection(with: .video) {
+                        connection.automaticallyAdjustsVideoMirroring = false
+                        connection.isVideoMirrored = false
                     }
                     // turn on flash if flash is enabled and camera is back camera
                     if (self.currentCamera == 1 && self._isFlashEnabled) {

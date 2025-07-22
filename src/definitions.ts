@@ -40,10 +40,10 @@ export interface VideoRecorderPreviewFrame {
     color?: string;
   };
   /**
-   * Whether to mirror the camera preview horizontally (useful for front camera).
+   * Whether to mirror the front camera preview horizontally. Only applies to front camera.
    * @default true
    */
-  mirror?: boolean;
+  mirrorFrontCam?: boolean;
 }
 
 export interface VideoRecorderErrors {

@@ -20,6 +20,8 @@ import {
   cameraReverseOutline,
   folderOutline,
   folderOpenOutline,
+  invertModeOutline,
+  invertMode,
   settingsOutline, videocamOffOutline, flashOutline, flashOffOutline } from 'ionicons/icons';
 import { Filesystem } from '@capacitor/filesystem';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
@@ -42,8 +44,10 @@ export class HomePage implements OnInit, OnDestroy {
   quality = VideoRecorderQuality.MAX_720P;
   isFlashAvailable = false;
   isFlashEnabled = false;
+  mirrorFrontCam = true;
   cameraSide = VideoRecorderCamera.BACK;
   CAMERA_BACK = VideoRecorderCamera.BACK;
+  CAMERA_FRONT = VideoRecorderCamera.FRONT;
 
   videoQualityMap = [
     { command: VideoRecorderQuality.HIGHEST, label: 'Highest' },
@@ -56,7 +60,7 @@ export class HomePage implements OnInit, OnDestroy {
   ]
 
   constructor() {
-    addIcons({videocamOffOutline,videocam,stopCircleOutline,cameraReverseOutline,flashOutline,flashOffOutline,settingsOutline,folderOutline,folderOpenOutline});
+    addIcons({videocamOffOutline,videocam,stopCircleOutline,cameraReverseOutline,flashOutline,flashOffOutline,settingsOutline,folderOutline,folderOpenOutline,invertMode,invertModeOutline});
   }
 
   ngOnInit() {
@@ -101,6 +105,7 @@ export class HomePage implements OnInit, OnDestroy {
       x: 0,
       y: 0,
       borderRadius: 0,
+      mirrorFrontCam: this.mirrorFrontCam,
     };
     if (this.initialized) {
       return;
@@ -123,7 +128,7 @@ export class HomePage implements OnInit, OnDestroy {
     if (this.platform.is('android')) {
       // Only used by Android
       await VideoRecorder.showPreviewFrame({
-        position: 0, // 0:= - Back, 1:= - Front
+        position: this.cameraSide === this.CAMERA_BACK ? 0 : 1, // 0:= - Back, 1:= - Front
         quality: this.quality
       });
     }
@@ -204,6 +209,13 @@ export class HomePage implements OnInit, OnDestroy {
 
   async videoQualityChanged(quality: VideoRecorderQuality) {
     this.quality = quality;
+    await this.destroyCamera();
+    this.showVideos = false;
+    await this.initialise();
+  }
+
+  async toggleFrontCamMirror() {
+    this.mirrorFrontCam = !this.mirrorFrontCam;
     await this.destroyCamera();
     this.showVideos = false;
     await this.initialise();

@@ -1,9 +1,11 @@
 package com.capacitorcommunity.videorecorder;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 import com.getcapacitor.JSArray;
@@ -41,10 +43,12 @@ public class VideoRecorderPlugin extends Plugin {
     private HashMap<String, FrameConfig> previewFrameConfigs;
     private FrameConfig currentFrameConfig;
     private FancyCamera.CameraPosition cameraPosition = FancyCamera.CameraPosition.FRONT;
+    private int currentCameraPositionInt = 1; // Track camera position ourselves: 0 = back, 1 = front
     private Timer audioFeedbackTimer;
     private boolean timerStarted;
     private Integer videoBitrate = 3000000;
     private boolean _isFlashEnabled = false;
+    private Integer previousBackgroundColor = null;
 
     PluginCall getCall() {
         return call;
@@ -205,20 +209,29 @@ public class VideoRecorderPlugin extends Plugin {
                 JSONObject obj = (JSONObject) array.get(i);
                 FrameConfig config = new FrameConfig(JSObject.fromJSONObject(obj));
                 previewFrameConfigs.put(config.id, config);
+
+                // Set the first preview frame as the current frame config
+                if (i == 0) {
+                    currentFrameConfig = config;
+                }
             } catch (JSONException ignored) {
 
             }
         }
 
         fancyCamera.setCameraPosition(1);
+        currentCameraPositionInt = 1; // Set our tracked position to front camera
         if (fancyCamera.hasPermission()) {
             // Swapping these around since it is the other way for iOS and the plugin interface needs to stay consistent
             if (call.getInt("camera") == 1) {
                 fancyCamera.setCameraPosition(0);
+                currentCameraPositionInt = 0; // Back camera
             } else if (call.getInt("camera") == 0) {
                 fancyCamera.setCameraPosition(1);
+                currentCameraPositionInt = 1; // Front camera
             } else {
                 fancyCamera.setCameraPosition(1);
+                currentCameraPositionInt = 1; // Front camera
             }
         } else {
             fancyCamera.requestPermission();
@@ -234,12 +247,19 @@ public class VideoRecorderPlugin extends Plugin {
     @PluginMethod()
     public void destroy(PluginCall call) {
         makeOpaque();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((ViewGroup) bridge.getWebView().getParent()).removeView(fancyCamera);
+
+        getActivity().runOnUiThread(() -> {
+            ViewParent parent = fancyCamera.getParent();
+            if (parent instanceof ViewGroup) {
+                ViewGroup parentGroup = (ViewGroup) parent;
+                if (previousBackgroundColor != null) {
+                    parentGroup.setBackgroundColor(previousBackgroundColor);
+                    previousBackgroundColor = null;
+                }
+                ((ViewGroup) parent).removeView(fancyCamera);
             }
         });
+
         fancyCamera.release();
         call.resolve();
     }
@@ -253,12 +273,20 @@ public class VideoRecorderPlugin extends Plugin {
         int position = call.getInt("position");
         int quality = call.getInt("quality");
         fancyCamera.setCameraPosition(position);
+        currentCameraPositionInt = position; // Update our tracked position
         fancyCamera.setQuality(quality);
         bridge.getWebView().setBackgroundColor(Color.argb(0, 0, 0, 0));
         if (fancyCamera != null && !fancyCamera.cameraStarted()) {
             startCamera();
             this.call = call;
         } else {
+            // Update camera view to apply mirroring settings after camera position change
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateCameraView(currentFrameConfig);
+                }
+            });
             call.resolve();
         }
     }
@@ -303,6 +331,25 @@ public class VideoRecorderPlugin extends Plugin {
     @PluginMethod()
     public void flipCamera(PluginCall call) {
         fancyCamera.toggleCamera();
+
+        // Update our tracked camera position
+        currentCameraPositionInt = (currentCameraPositionInt == 0) ? 1 : 0;
+        android.util.Log.d("VideoRecorder", "Camera flipped to position: " + currentCameraPositionInt);
+
+        // Update camera view to apply correct mirroring for the new camera position
+        // Add a small delay to ensure the camera position has been updated
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                new android.os.Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateCameraView(currentFrameConfig);
+                    }
+                }, 100); // 100ms delay
+            }
+        });
+
         call.resolve();
     }
 
@@ -349,6 +396,7 @@ public class VideoRecorderPlugin extends Plugin {
     public void setPosition(PluginCall call) {
         int position = call.getInt("position");
         fancyCamera.setCameraPosition(position);
+        currentCameraPositionInt = position; // Update our tracked position
     }
 
     @PluginMethod()
@@ -478,13 +526,20 @@ public class VideoRecorderPlugin extends Plugin {
 
         // Center the preview frame horizontally if x is 0 and height and width are -1
         if (isLandscape && frameConfig.x == 0 && frameConfig.height == -1 && frameConfig.width == -1) {
-            fancyCamera.setX((deviceWidth - width) / 2);
+            fancyCamera.setX((float) (deviceWidth - width) / 2);
         } else {
             fancyCamera.setX(getPixels((int) frameConfig.x));
         }
 
         // Set the background color to black
-        ((ViewGroup) fancyCamera.getParent()).setBackgroundColor(Color.BLACK);
+        ViewParent parent = fancyCamera.getParent();
+        if (parent instanceof ViewGroup) {
+            ViewGroup parentGroup = (ViewGroup) parent;
+            if (parentGroup.getBackground() instanceof ColorDrawable colorDrawable) {
+                previousBackgroundColor = colorDrawable.getColor();
+            }
+            parentGroup.setBackgroundColor(Color.BLACK);
+        }
 
         fancyCamera.setElevation(9);
         bridge.getWebView().setElevation(9);
@@ -512,15 +567,42 @@ public class VideoRecorderPlugin extends Plugin {
             });
         }
 
-        // Apply mirroring if needed (front camera and mirror true)
+        // Apply mirroring if needed (front camera and mirrorFrontCam true)
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (fancyCamera.getCameraPosition() == 1 && frameConfig.mirror) { // 1 = front camera (see initialize)
-                    fancyCamera.setScaleX(-1f);
-                } else {
-                    fancyCamera.setScaleX(1f);
-                }
+                // Add a small delay to ensure camera position is stable
+                new android.os.Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Use our tracked camera position instead of fancyCamera.getCameraPosition()
+                        int trackedCameraPosition = currentCameraPositionInt;
+                        int fancyCameraPosition = fancyCamera.getCameraPosition();
+
+                        android.util.Log.d("VideoRecorder", "Applying mirroring - Tracked: " + trackedCameraPosition + ", FancyCamera: " + fancyCameraPosition + ", Mirror: " + frameConfig.mirrorFrontCam);
+
+                        // Apply mirroring logic using our tracked position:
+                        // - If front camera (1) AND mirrorFrontCam is true: apply mirroring (-1f)
+                        // - If front camera (1) AND mirrorFrontCam is false: no mirroring (1f)
+                        // - If back camera (0): no mirroring regardless of mirrorFrontCam (1f)
+                        if (trackedCameraPosition == 1) { // Front camera
+                            if (frameConfig.mirrorFrontCam) {
+                                android.util.Log.d("VideoRecorder", "Front camera: Applying mirror effect");
+                                fancyCamera.setScaleX(1f);
+                            } else {
+                                android.util.Log.d("VideoRecorder", "Front camera: No mirror (mirrorFrontCam=false)");
+                                fancyCamera.setScaleX(-1f);
+                            }
+                        } else { // Back camera
+                            android.util.Log.d("VideoRecorder", "Back camera: No mirror effect");
+                            fancyCamera.setScaleX(1f);
+                        }
+
+                        // Force a layout update to ensure the changes are applied
+                        fancyCamera.requestLayout();
+                        fancyCamera.invalidate();
+                    }
+                }, 50); // 50ms delay to ensure camera position is stable
             }
         });
     }
@@ -535,7 +617,7 @@ public class VideoRecorderPlugin extends Plugin {
         int height;
         float borderRadius;
         DropShadow dropShadow;
-        boolean mirror;
+        boolean mirrorFrontCam;
 
         FrameConfig(JSObject object) {
             id = object.getString("id");
@@ -547,10 +629,10 @@ public class VideoRecorderPlugin extends Plugin {
             borderRadius = object.getInteger("borderRadius", 0);
             JSObject ds = object.getJSObject("dropShadow");
             dropShadow = new DropShadow(ds != null ? ds : new JSObject());
-            if (object.has("mirror")) {
-                mirror = object.getBool("mirror");
+            if (object.has("mirrorFrontCam")) {
+                mirrorFrontCam = object.getBool("mirrorFrontCam");
             } else {
-                mirror = true;
+                mirrorFrontCam = true;
             }
         }
 

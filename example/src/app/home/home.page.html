@@ -48,6 +48,12 @@
     <ion-button *ngIf="!isRecording" (click)="flipCamera()">
       <ion-icon name="camera-reverse-outline"></ion-icon>
     </ion-button>
+    <ion-button *ngIf="cameraSide === CAMERA_FRONT && mirrorFrontCam && !isRecording" (click)="toggleFrontCamMirror()">
+      <ion-icon name="invert-mode-outline"></ion-icon>
+    </ion-button>
+    <ion-button *ngIf="cameraSide === CAMERA_FRONT && !mirrorFrontCam && !isRecording" (click)="toggleFrontCamMirror()">
+      <ion-icon name="invert-mode"></ion-icon>
+    </ion-button>
     <ion-button *ngIf="isFlashAvailable && isFlashEnabled && cameraSide === CAMERA_BACK && !isRecording" (click)="toggleFlash()">
       <ion-icon name="flash-outline"></ion-icon>
     </ion-button>

@@ -358,16 +358,17 @@ addListener(eventName: 'onVolumeInput', listenerFunc: (event: { value: number; }
 
 #### VideoRecorderPreviewFrame
 
-| Prop                | Type                                                                |
-| ------------------- | ------------------------------------------------------------------- |
-| **`id`**            | <code>string</code>                                                 |
-| **`stackPosition`** | <code>'front' \| 'back'</code>                                      |
-| **`x`**             | <code>number</code>                                                 |
-| **`y`**             | <code>number</code>                                                 |
-| **`width`**         | <code>number \| 'fill'</code>                                       |
-| **`height`**        | <code>number \| 'fill'</code>                                       |
-| **`borderRadius`**  | <code>number</code>                                                 |
-| **`dropShadow`**    | <code>{ opacity?: number; radius?: number; color?: string; }</code> |
+| Prop                 | Type                                                                | Description                                                                            | Default           |
+| -------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ----------------- |
+| **`id`**             | <code>string</code>                                                 |                                                                                        |                   |
+| **`stackPosition`**  | <code>'front' \| 'back'</code>                                      |                                                                                        |                   |
+| **`x`**              | <code>number</code>                                                 |                                                                                        |                   |
+| **`y`**              | <code>number</code>                                                 |                                                                                        |                   |
+| **`width`**          | <code>number \| 'fill'</code>                                       |                                                                                        |                   |
+| **`height`**         | <code>number \| 'fill'</code>                                       |                                                                                        |                   |
+| **`borderRadius`**   | <code>number</code>                                                 |                                                                                        |                   |
+| **`dropShadow`**     | <code>{ opacity?: number; radius?: number; color?: string; }</code> |                                                                                        |                   |
+| **`mirrorFrontCam`** | <code>boolean</code>                                                | Whether to mirror the front camera preview horizontally. Only applies to front camera. | <code>true</code> |
 
 
 #### PluginListenerHandle
