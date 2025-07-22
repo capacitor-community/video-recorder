@@ -28,6 +28,7 @@ public class FrameConfig {
     var height: Any
     var borderRadius: CGFloat
     var dropShadow: DropShadow
+    var mirror: Bool
 
     init(_ options: [AnyHashable: Any] = [:]) {
         self.id = options["id"] as! String
@@ -38,6 +39,8 @@ public class FrameConfig {
         self.height = options["height"] ?? "fill"
         self.borderRadius = options["borderRadius"] as? CGFloat ?? 0
         self.dropShadow = DropShadow(options["dropShadow"] as? [AnyHashable: Any] ?? [:])
+        self.mirror = options["mirror"] as? Bool ?? true
+    }
     }
 
     class DropShadow {
@@ -582,6 +585,17 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
         self.cameraView.layer.shadowOpacity = config.dropShadow.opacity
         self.cameraView.layer.shadowRadius = config.dropShadow.radius
         self.cameraView.layer.shadowPath = UIBezierPath(roundedRect: self.cameraView.bounds, cornerRadius: config.borderRadius).cgPath
+
+        // Set mirroring for front camera
+        if let connection = self.cameraView.videoPreviewLayer?.connection {
+            if self.currentCamera == 0 { // 0 = front camera
+                connection.automaticallyAdjustsVideoMirroring = true
+                connection.isVideoMirrored = config.mirror
+            } else {
+                connection.automaticallyAdjustsVideoMirroring = false
+                connection.isVideoMirrored = false
+            }
+        }
     }
 
 	/**
