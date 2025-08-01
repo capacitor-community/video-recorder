@@ -220,9 +220,6 @@ public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
         // log to console for initializing
         print("Initializing camera")
 
-        // flash is turned off by default when initializing camera
-        self._isFlashEnabled = false;
-
         if (self.captureSession?.isRunning != true) {
             self.currentCamera = call.getInt("camera", 0)
             self.quality = call.getInt("quality", 0)
