@@ -160,7 +160,27 @@ public func randomFileName() -> String {
 }
 
 @objc(VideoRecorder)
-public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate {
+public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate, CAPBridgedPlugin {
+    public let identifier = "VideoRecorder" 
+    public let jsName = "VideoRecorder" 
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "initialize", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "destroy", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "flipCamera", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "toggleFlash", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "enableFlash", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "disableFlash", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "isFlashAvailable", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "isFlashEnabled", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "addPreviewFrameConfig", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "editPreviewFrameConfig", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "switchToPreviewFrame", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "showPreviewFrame", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "hidePreviewFrame", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "startRecording", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "stopRecording", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getDuration", returnType: CAPPluginReturnPromise),
+    ] 
 
     var capWebView: WKWebView!
 
