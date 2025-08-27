@@ -1,2 +1,9 @@
 // For information on how to create your own theme, please see:
 // http://ionicframework.com/docs/theming/
+@import "@ionic/angular/css/palettes/dark.system.css";
+
+@media (prefers-color-scheme: dark) {
+  :root.ios {
+    --ion-background-color: transparent;
+  }
+}
