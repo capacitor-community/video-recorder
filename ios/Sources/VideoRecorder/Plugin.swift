@@ -161,8 +161,8 @@ public func randomFileName() -> String {
 
 @objc(VideoRecorder)
 public class VideoRecorder: CAPPlugin, AVCaptureFileOutputRecordingDelegate, CAPBridgedPlugin {
-    public let identifier = "VideoRecorder" 
-    public let jsName = "VideoRecorder" 
+    public let identifier = "VideoRecorder"
+    public let jsName = "VideoRecorder"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "initialize", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "destroy", returnType: CAPPluginReturnPromise),
